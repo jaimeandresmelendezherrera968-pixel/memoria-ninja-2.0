@@ -1,0 +1,60 @@
+﻿/* Muerte: variante 1J — hereda layout/tamaños/posiciones uchiha vía nivel-base+tema-aldea.
+   Colores/ambiente propios; reglas/JS/IDs/modales (#statsModal, modo2Jugadores, progreso+historial) intactos. */
+:root{
+  --n-body-bg:#331e41; --n-text:#f0f6ff; --n-stats:#ffd7d7;
+  --n-frame-bg:linear-gradient(180deg,#1f1f1f,#0e0d0d); --n-frame-border:#640101; --n-board-bg:#1b1b1b;
+  --n-panel-a:#2b1818; --n-panel-b:#160404; --n-brillo:#ff4d4d; --n-btn-bg:linear-gradient(135deg,#a80000,#f00000);
+  --n-v-glow:rgba(255,0,0,.45);
+}
+body{
+  font-family:'Fredoka',Arial,sans-serif;
+  background-color:var(--n-body-bg);
+  background-image:url(../assets/img/sasuke.png),url(../assets/img/naruto.png);
+  background-size:45%; background-repeat:no-repeat; background-position:left top,right top;
+}
+/* PC como uchiha: sin scroll en el viewport base; móvil maneja altura vía d*vh del shell */
+html,body{ overflow:hidden; }
+#videofondo{ object-fit:cover; object-position:center; }
+.titulo-juego{ margin:2px 0 4px; position:relative; z-index:2; }
+.titulo-juego h1{ margin:0; font-size:clamp(1rem,2.2vw,1.9rem); color:#f4c542; text-shadow:0 0 5px #000,0 0 10px #8b5cf6; letter-spacing:2px; }
+.titulo-juego p{ margin:2px 0 0; color:#fff; font-size:clamp(.65rem,1.1vw,.95rem); opacity:.85; }
+.game-shell{ gap:4px; }
+/* Recuadro stats propio (rojo) encima del estilo base */
+#stats.stats{ background:rgba(20,5,5,.9); border:2px solid #a80000; border-radius:12px; box-shadow:0 0 12px rgba(255,0,0,.45); }
+#stats.stats span{ color:#fff; } #stats.stats span span{ color:#ffd700; text-shadow:0 0 5px red; }
+/* Vignette roja ambiente (no bloquea input) */
+body::before{ content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(circle,transparent 45%,rgba(77,1,1,.55) 78%,rgba(207,1,1,.45) 100%);
+  animation:efectoRojo 3s ease-in-out infinite; }
+@keyframes efectoRojo{ 0%,100%{opacity:.55} 50%{opacity:.85} }
+.game-shell,.boton{ position:relative; z-index:1; }
+/* Flip: muerte usa .card.flip (su controller) + .card.flipped (tema-aldea) */
+.card.flip{ transform: rotateY(180deg); }
+.card.matched,.card.emparejada{ box-shadow:0 6px 20px rgba(17,15,15,.6) inset; opacity:.9; pointer-events:none; }
+/* Modales propios (colores) — layout/pos fixed los da nivel-base */
+#modal .panel h2{ color:#ff4d5e; }
+#modal button,.victory-buttons button{ border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
+#modal button{ background:#f81515; color:#fff; }
+#modal button:hover,.victory-buttons button:hover{ transform:scale(1.05); }
+.victory-icon{ animation:trofeo 1s ease-in-out infinite alternate; }
+@keyframes trofeo{ from{transform:translateY(0)} to{transform:translateY(-8px)} }
+/* #statsModal (propio de muerte) */
+#statsModal{ position:fixed; inset:0; display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,.75); z-index:16000; }
+#statsModal.hidden{ display:none !important; }
+.stats-panel{ width:min(420px,92vw); max-height:calc(100dvh - 16px); overflow:auto; background:linear-gradient(145deg,#2b1818,#160404); color:#fff; border:2px solid #a80000; border-radius:16px; padding:18px; text-align:center; box-shadow:0 0 20px rgba(255,0,0,.35); }
+.stats-container{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:10px 0; }
+.stat-box{ background:rgba(0,0,0,.35); border:1px solid #640101; border-radius:10px; padding:8px 10px; min-width:90px; }
+.stats-close,.stats-button{ background:#f81515; color:#fff; border:none; border-radius:8px; padding:8px 12px; font-weight:bold; cursor:pointer; }
+/* Mobile: sin scroll, respeta PC — el shell/tema-aldea escala; título compacto */
+@media (max-width:900px),(max-height:520px){
+  .titulo-juego h1{ font-size:clamp(.85rem,3.2vw,1.2rem); letter-spacing:1px; }
+  .titulo-juego p{ display:none; }
+  .game-shell{ padding-top:calc(4px + env(safe-area-inset-top)); padding-bottom:calc(4px + env(safe-area-inset-bottom)); }
+}
+@supports (height: 1svh){ .stats-panel{ max-height:calc(100svh - 16px); } }
+/* Activar reglas responsive de tema-aldea (#board/#boardFrame) y neutralizar inline 100px del controller */
+body[data-tema-aldea] #board,
+body[data-tema-aldea] #boardFrame #board { grid-template-columns: repeat(4, var(--carta-ancho)) !important; gap: var(--gap-cartas, 18px) !important; padding: clamp(10px, 2vmin, 22px) !important; }
+body[data-tema-aldea] #boardFrame { border-color: var(--n-frame-border, #640101) !important; }
+/* Si el nivel genera distinto nº de cartas, el controller pisa columnas: forzamos tamaño carta responsive */
+#board .card { width: var(--carta-ancho, 100px) !important; height: calc(var(--carta-ancho, 100px) * 1.4) !important; }
